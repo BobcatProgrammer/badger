@@ -1,0 +1,54 @@
+/* Force dark theme for select dropdowns and scrollbars in sidebar */
+.badge-editor .bg-neutral-700,
+.badge-editor input[type="text"],
+.badge-editor input[type="number"],
+.badge-editor input[type="color"] {
+    background-color: #23272a !important;
+    color: #f3f4f6 !important;
+    border-color: #374151 !important;
+}
+
+.badge-editor .bg-neutral-800,
+.badge-editor .dropdown-menu,
+.badge-editor .dropdown-content {
+    background-color: #181a1b !important;
+    color: #f3f4f6 !important;
+    border-color: #23272a !important;
+}
+
+.badge-editor ::-webkit-scrollbar {
+    width: 8px;
+    background: #23272a;
+}
+
+.badge-editor ::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 4px;
+}
+
+.badge-editor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.controls label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    gap: 0.25rem;
+}
+
+svg {
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 12px #0002;
+}
