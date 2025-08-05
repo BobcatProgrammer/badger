@@ -5,8 +5,8 @@ import { useState } from 'react';
 import AsyncIconSelect from './AsyncIconSelect';
 import IconEditor from './IconEditor';
 import { getIconComponent } from './IconUtils';
-import './BadgeEditor.css';
 import { v4 as uuidv4 } from 'uuid';
+import { FaPlus } from 'react-icons/fa';
 
 
 export default function BadgeEditor() {
@@ -22,28 +22,80 @@ export default function BadgeEditor() {
     const [textColor, setTextColor] = useState('#fff');
 
     return (
-        <div className="flex w-screen h-screen overflow-hidden">
+        <div className="flex w-screen h-screen bg-base-100 overflow-hidden">
             {/* Sidebar Settings Panel (Left) */}
-            <aside
-                className="flex flex-col h-full max-width-md overflow-y-auto overflow-x-hidden px-5"
-            >
-                <div className="flex flex-col gap-8 flex-1">
+            <aside className="flex flex-col h-full max-w-1/3 bg-base-200 overflow-y-auto overflow-x-hidden px-4 border-r">
+                {/* Fixed header */}
+                <div className="sticky top-0 z-10 bg-base-200 pb-2 pt-4">
+                    <h2 className="text-lg font-bold mb-4 text-base-content">SVG Badge Generator</h2>
+                </div>
+                {/* Scrollable content */}
+                <div className="flex flex-col flex-1 space-y-6">
                     {/* Text Section */}
                     <section>
-                        <h3 className="uppercase">Text</h3>
-                        <div className="flex flex-col gap-3">
-                            <label className="font-medium">Top Text</label>
-                            <input value={topText} onChange={e => setTopText(e.target.value)} className="input input-bordered input-primary w-full bg-neutral-700 text-neutral-100 border-neutral-600" />
-                            <label className="font-medium">Bottom Text</label>
-                            <input value={bottomText} onChange={e => setBottomText(e.target.value)} className="input input-bordered input-primary w-full bg-neutral-700 text-neutral-100 border-neutral-600" />
-                            <label className="font-medium">Text Color</label>
-                            <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="input input-xs p-0 h-8 w-16 border-none bg-transparent" />
+                        <h3 className='text-sm font-semibold text-base-content/70 uppercase tracking-widest'>Text</h3>
+                        <div>
+                            <fieldset className="fieldset">
+                                <legend className='fieldset-legend'>Top Text</legend>
+                                <input
+                                    value={topText}
+                                    onChange={e => setTopText(e.target.value)}
+                                    className="input input-lg"
+                                    placeholder="Enter top text"
+                                />
+                            </fieldset>
+                            <fieldset className="fieldset">
+                                <legend className='fieldset-legend'>Bottom Text</legend>
+                                <input
+                                    value={bottomText}
+                                    onChange={e => setBottomText(e.target.value)}
+                                    className="input input-lg"
+                                    placeholder="Enter bottom text"
+                                />
+                            </fieldset>
+                            <fieldset className="fieldset center">
+                                <legend className='fieldset-legend'>Text Color</legend>
+                                <div className="flex justify-center items-center w-full">
+                                    <input
+                                        type="color"
+                                        value={textColor}
+                                        onChange={e => setTextColor(e.target.value)}
+                                        className="input input-sm w-20 h-10 p-1"
+                                    />
+                                </div>
+                            </fieldset>
                         </div>
                     </section>
+                    <div className="divider"></div>
+                    {/* Badge Colors Section */}
+                    <section>
+                        <h3 className="text-sm font-semibold text-base-content/70 uppercase tracking-widest mb-4">Badge Colors</h3>
+                        <div>
+                            <label className="label">
+                                <span className="label-text">Background Color</span>
+                            </label>
+                            <input
+                                type="color"
+                                value={bgColor}
+                                onChange={e => setBgColor(e.target.value)}
+                                className="input input-sm w-20 h-10 p-1"
+                            />
+                            <label className="label">
+                                <span className="label-text">Brim Color</span>
+                            </label>
+                            <input
+                                type="color"
+                                value={brimColor}
+                                onChange={e => setBrimColor(e.target.value)}
+                                className="input input-sm w-20 h-10 p-1"
+                            />
+                        </div>
+                    </section>
+                    <div className="divider"></div>
                     {/* Icons Section */}
                     <section>
-                        <h3 className="uppercase text-xs font-semibold text-neutral-400 mb-3 tracking-widest">Icons</h3>
-                        <div className="flex flex-col gap-4 mt-2">
+                        <h3 className="text-sm font-semibold text-base-content/70 uppercase tracking-widest mb-4">Icons</h3>
+                        <div className="">
                             {icons.map((icon, idx) => (
                                 <IconEditor
                                     key={icon.id}
@@ -55,66 +107,60 @@ export default function BadgeEditor() {
                                 />
                             ))}
                             <button
-                                className="btn btn-primary btn-sm mt-2"
+                                className="btn btn-primary mt-4"
                                 onClick={() => setIcons([
                                     ...icons,
-                                    { id: uuidv4(), name: 'FaStar', size: 60, x: 0, y: 0, color: '#111' },
+                                    { id: uuidv4(), name: 'FaStar', size: 60, x: 0, y: 0, color: '#000' },
                                 ])}
                             >
-                                + Add Icon
+                                <FaPlus /> Add Icon
                             </button>
-                        </div>
-                    </section>
-                    {/* Badge Colors Section */}
-                    <section>
-                        <h3 className="uppercase text-xs font-semibold text-neutral-400 mb-3 tracking-widest">Badge Colors</h3>
-                        <div className="flex flex-col gap-3">
-                            <label className="font-medium">Background Color</label>
-                            <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} className="input input-xs p-0 h-8 w-16 border-none bg-transparent" />
-                            <label className="font-medium">Brim Color</label>
-                            <input type="color" value={brimColor} onChange={e => setBrimColor(e.target.value)} className="input input-xs p-0 h-8 w-16 border-none bg-transparent" />
                         </div>
                     </section>
                 </div>
             </aside>
             {/* Badge Preview (Right) */}
-            <main className="flex-1 flex items-center justify-center h-full w-full overflow-hidden">
-                <div className="flex flex-col items-center justify-center w-full h-full" style={{ minHeight: 0, minWidth: 0 }}>
-                    <div className="flex items-center justify-center w-full h-full" style={{ minHeight: 0, minWidth: 0 }}>
-                        <div className="card bg-base-200 shadow-xl flex items-center justify-center p-8 max-h-[90vh] max-w-[90vw]">
-                            <svg width="340" height="340" viewBox="0 0 340 340">
-                                {/* Outer black ring */}
-                                <circle cx="170" cy="170" r="160" fill={brimColor} />
-                                {/* Inner colored circle (smaller to create a thick brim) */}
-                                <circle cx="170" cy="170" r="120" fill={bgColor} />
-                                {/* Top curved text: semicircle arc, left to right (top half, radius 140) */}
-                                <path id="topCurve" d="M 30,170 A 140,140 0 0 1 310,170" fill="none" />
-                                {/* Bottom curved text: semicircle arc, left to right (bottom half, radius 140) */}
-                                <path id="bottomCurve" d="M 30,170 A 140,140 0 0 0 310,170" fill="none" />
-                                <text fontSize="24" fontWeight="bold" fill={textColor} letterSpacing="2">
-                                    <textPath href="#topCurve" startOffset="50%" textAnchor="middle" dominantBaseline="middle">
-                                        {topText}
-                                    </textPath>
-                                </text>
-                                <text fontSize="24" fontWeight="bold" fill={textColor} letterSpacing="2">
-                                    <textPath href="#bottomCurve" startOffset="50%" textAnchor="middle" dominantBaseline="middle">
-                                        {bottomText}
-                                    </textPath>
-                                </text>
-                                {/* Center icons, stacked */}
-                                <g>
-                                    <g transform="translate(170,150)">
-                                        {icons.map(icon => {
-                                            const IconComp = getIconComponent(icon.name);
-                                            return IconComp ? (
-                                                <g key={icon.id} transform={`translate(${icon.x},${icon.y})`}>
-                                                    <IconComp size={icon.size} color={icon.color} />
-                                                </g>
-                                            ) : null;
-                                        })}
+            <main className="flex-1 flex items-center justify-center h-full w-full bg-base-100 overflow-hidden">
+                <div className="hero min-h-full">
+                    <div className="hero-content">
+                        <div className="card bg-base-200 shadow-xl">
+                            <div className="card-body p-8">
+                                <svg width="340" height="340" viewBox="0 0 340 340">
+                                    {/* Outer black ring */}
+                                    <circle cx="170" cy="170" r="160" fill={brimColor} />
+                                    {/* Inner colored circle (smaller to create a thick brim) */}
+                                    <circle cx="170" cy="170" r="120" fill={bgColor} />
+                                    {/* Top curved text: semicircle arc, left to right (top half, radius 140) */}
+                                    <path id="topCurve" d="M 30,170 A 140,140 0 0 1 310,170" fill="none" />
+                                    {/* Bottom curved text: semicircle arc, left to right (bottom half, radius 140) */}
+                                    <path id="bottomCurve" d="M 30,170 A 140,140 0 0 0 310,170" fill="none" />
+                                    <text fontSize="24" fontWeight="bold" fill={textColor} letterSpacing="2">
+                                        <textPath href="#topCurve" startOffset="50%" textAnchor="middle" dominantBaseline="middle">
+                                            {topText}
+                                        </textPath>
+                                    </text>
+                                    <text fontSize="24" fontWeight="bold" fill={textColor} letterSpacing="2">
+                                        <textPath href="#bottomCurve" startOffset="50%" textAnchor="middle" dominantBaseline="middle">
+                                            {bottomText}
+                                        </textPath>
+                                    </text>
+                                    {/* Center icons, stacked */}
+                                    <g>
+                                        <g transform="translate(170,170)">
+                                            {icons.map(icon => {
+                                                const IconComp = getIconComponent(icon.name);
+                                                // Offset by -size/2 so the icon's center is at (x, y) relative to badge center
+                                                const offset = -icon.size / 2;
+                                                return IconComp ? (
+                                                    <g key={icon.id} transform={`translate(${icon.x + offset},${icon.y + offset})`}>
+                                                        <IconComp size={icon.size} color={icon.color} />
+                                                    </g>
+                                                ) : null;
+                                            })}
+                                        </g>
                                     </g>
-                                </g>
-                            </svg>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>

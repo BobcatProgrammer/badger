@@ -1,94 +1,112 @@
 import AsyncIconSelect from './AsyncIconSelect';
+import { FaTrash } from 'react-icons/fa';
+import "./IconEditor.css"; // Assuming you have some styles for this component
 
 export default function IconEditor({ icon, index, onChange, onRemove, canRemove }) {
+    // Set default min/max if not provided via props
+    const sizeMin = typeof IconEditor.sizeMin === 'number' ? IconEditor.sizeMin : 20;
+    const sizeMax = typeof IconEditor.sizeMax === 'number' ? IconEditor.sizeMax : 200;
+
     return (
-        <div className="bg-neutral-700 rounded-lg p-3 flex flex-col gap-2 border border-neutral-600">
-            <div className="flex items-center gap-2">
-                <span className="badge badge-primary badge-sm">Icon {index + 1}</span>
-                {canRemove && (
-                    <button
-                        className="btn btn-xs btn-circle btn-ghost text-error ml-auto"
-                        title="Remove Icon"
-                        onClick={onRemove}
-                    >
-                        ✕
-                    </button>
-                )}
-            </div>
-            <AsyncIconSelect
-                value={icon.name}
-                onChange={name => onChange({ ...icon, name })}
-                className="bg-neutral-800 text-neutral-100 border-neutral-600"
-                dropdownClassName="bg-neutral-900 text-neutral-100 border-neutral-700"
-            />
-            <div className="flex flex-col gap-2 mt-2">
-                <div className="flex flex-col mb-4">
-                    <label className="text-xs font-medium text-neutral-400 mb-2">Icon Color</label>
+        <div className="card bg-base-300 border border-base-300">
+            <div className="card-body p-3 space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="badge badge-primary badge-sm">Icon {index + 1}</span>
+                    {canRemove && (
+                        <button
+                            className="btn btn-error flex items-center"
+                            title="Remove Icon"
+                            onClick={onRemove}
+                        >
+                            <FaTrash />
+                        </button>
+                    )}
+                </div>
+
+                <AsyncIconSelect
+                    value={icon.name}
+                    onChange={name => onChange({ ...icon, name })}
+                    className="select select-bordered w-full"
+                    dropdownClassName="bg-base-200 border-base-300"
+                />
+
+                <div className="space-y-3">
+                    <label className="label">
+                        <span className="label-text">Icon Color</span>
+                    </label>
                     <input
                         type="color"
                         value={icon.color}
                         onChange={e => onChange({ ...icon, color: e.target.value })}
-                        className="input input-xs h-12 w-24 border-none bg-transparent rounded-lg shadow"
-                        style={{ maxWidth: '100px', padding: '6px', marginBottom: '4px' }}
+                        className="input input-sm w-20 h-10 p-1"
                     />
-                </div>
-                <div className="flex gap-2">
-                    <div className="flex-1 flex flex-col">
-                        <label className="text-xs font-medium text-neutral-400">Size</label>
-                        <input
-                            type="range"
-                            min="20"
-                            max="120"
-                            value={icon.size}
-                            onChange={e => onChange({ ...icon, size: Number(e.target.value) })}
-                            className="range range-primary"
-                        />
-                        <input
-                            type="number"
-                            min="20"
-                            max="120"
-                            value={icon.size}
-                            onChange={e => onChange({ ...icon, size: Number(e.target.value) })}
-                            className="input input-xs input-bordered mt-1 bg-neutral-800 text-neutral-100 border-neutral-600"
-                        />
-                    </div>
-                    <div className="flex-1 flex flex-col">
-                        <label className="text-xs font-medium text-neutral-400">X</label>
-                        <input
-                            type="range"
-                            min="-150"
-                            max="150"
-                            value={icon.x}
-                            onChange={e => onChange({ ...icon, x: Number(e.target.value) })}
-                            className="range range-secondary"
-                        />
-                        <input
-                            type="number"
-                            min="-150"
-                            max="150"
-                            value={icon.x}
-                            onChange={e => onChange({ ...icon, x: Number(e.target.value) })}
-                            className="input input-xs input-bordered mt-1 bg-neutral-800 text-neutral-100 border-neutral-600"
-                        />
-                    </div>
-                    <div className="flex-1 flex flex-col">
-                        <label className="text-xs font-medium text-neutral-400">Y</label>
-                        <input
-                            type="range"
-                            min="-150"
-                            max="150"
-                            value={icon.y}
-                            onChange={e => onChange({ ...icon, y: Number(e.target.value) })}
-                            className="range range-accent"
-                        />
-                        <input
-                            type="number"
-                            min="-150"
-                            max="150"
-                            value={icon.y}
-                            onChange={e => onChange({ ...icon, y: Number(e.target.value) })}
-                            className="input input-xs input-bordered mt-1 bg-neutral-800 text-neutral-100 border-neutral-600"
-                        />
+
+                    <div className="grid grid-cols-3 gap-2">
+                        <div className="space-y-1">
+                            <label className="label">
+                                <span className="label-text text-xs">Size</span>
+                            </label>
+                            <input
+                                type="range"
+                                min={sizeMin}
+                                max={sizeMax}
+                                value={icon.size}
+                                onChange={e => onChange({ ...icon, size: Number(e.target.value) })}
+                                className="range range-primary range-xs"
+                            />
+                            <input
+                                type="number"
+                                min={sizeMin}
+                                max={sizeMax}
+                                value={icon.size}
+                                onChange={e => onChange({ ...icon, size: Number(e.target.value) })}
+                                className="input input-xs text-center"
+                            />
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="label">
+                                <span className="label-text text-xs">X</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="-150"
+                                max="150"
+                                value={icon.x}
+                                onChange={e => onChange({ ...icon, x: Number(e.target.value) })}
+                                className="range range-secondary range-xs"
+                            />
+                            <input
+                                type="number"
+                                min="-150"
+                                max="150"
+                                value={icon.x}
+                                onChange={e => onChange({ ...icon, x: Number(e.target.value) })}
+                                className="input input-xs text-center"
+                            />
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="label">
+                                <span className="label-text text-xs">Y</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="-150"
+                                max="150"
+                                value={icon.y}
+                                onChange={e => onChange({ ...icon, y: Number(e.target.value) })}
+                                className="range range-accent range-xs"
+                            />
+                            <input
+                                type="number"
+                                min="-150"
+                                max="150"
+                                value={icon.y}
+                                onChange={e => onChange({ ...icon, y: Number(e.target.value) })}
+                                className="input input-xs text-center"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

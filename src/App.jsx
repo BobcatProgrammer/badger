@@ -1,5 +1,4 @@
 
-import './App.css';
 import BadgeEditor from './components/BadgeEditor';
 
 function App() {
