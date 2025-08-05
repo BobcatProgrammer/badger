@@ -1,3 +1,8 @@
+---
+applyTo: 'src/**/*.{html,js,ts,jsx,tsx,css,scss}'
+description: 'Comprehensive guide for building robust, secure, and efficient CI/CD pipelines using GitHub Actions. Covers workflow structure, jobs, steps, environment variables, secret management, caching, matrix strategies, testing, and deployment strategies.'
+---
+
 # daisyUI 5
 daisyUI 5 is a CSS library for Tailwind CSS 4
 daisyUI 5 provides class names for common UI components

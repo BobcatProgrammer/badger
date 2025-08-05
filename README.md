@@ -1,6 +1,9 @@
 
 # SVG Badge Generator
 
+[![Deploy to GitHub Pages](https://github.com/trockels/badge-generator/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/trockels/badge-generator/actions/workflows/deploy.yml)
+[![MegaLinter](https://github.com/trockels/badge-generator/actions/workflows/mega-linter.yml/badge.svg?branch=main)](https://github.com/trockels/badge-generator/actions/workflows/mega-linter.yml)
+
 Create beautiful, round SVG badges with curved text and icons—right in your browser!
 
 ## Features

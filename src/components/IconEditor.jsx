@@ -41,7 +41,7 @@ export default function IconEditor({ icon, index, onChange, onRemove, canRemove 
                         className="input input-sm w-20 h-10 p-1"
                     />
 
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-4 gap-2">
                         <div className="space-y-1">
                             <label className="label">
                                 <span className="label-text text-xs">Size</span>
@@ -104,6 +104,28 @@ export default function IconEditor({ icon, index, onChange, onRemove, canRemove 
                                 max="150"
                                 value={icon.y}
                                 onChange={e => onChange({ ...icon, y: Number(e.target.value) })}
+                                className="input input-xs text-center"
+                            />
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="label">
+                                <span className="label-text text-xs">Rotation</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="359"
+                                value={icon.rotation || 0}
+                                onChange={e => onChange({ ...icon, rotation: Number(e.target.value) })}
+                                className="range range-info range-xs"
+                            />
+                            <input
+                                type="number"
+                                min="0"
+                                max="359"
+                                value={icon.rotation || 0}
+                                onChange={e => onChange({ ...icon, rotation: Number(e.target.value) })}
                                 className="input input-xs text-center"
                             />
                         </div>
