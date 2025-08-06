@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import AsyncIconSelect from './AsyncIconSelect';
 import IconEditor from './IconEditor';
 import { getIconComponent } from './IconUtils';
@@ -7,48 +7,117 @@ import { v4 as uuidv4 } from 'uuid';
 import { FaPlus } from 'react-icons/fa';
 
 export default function BadgeEditor() {
-    // --- State ---
-    const [topText, setTopText] = useState('TOP');
-    const [bottomText, setBottomText] = useState('BOTTOM');
-    const [icons, setIcons] = useState([
-        { id: uuidv4(), name: 'FaStar', size: 60, x: -40, y: 0, color: '#000000', rotation: 0 },
-        { id: uuidv4(), name: 'FaHeart', size: 60, x: 20, y: 40, color: '#000000', rotation: 0 },
-    ]);
-    const [bgMode, setBgMode] = useState('unicolor'); // 'unicolor' or 'gradient'
-    const [bgColor, setBgColor] = useState('#E2001A');
-    const [gradientColor1, setGradientColor1] = useState('#E2001A');
-    const [gradientColor2, setGradientColor2] = useState('#ffffff');
-    const [gradientDir, setGradientDir] = useState('horizontal'); // 'horizontal', 'vertical', 'diagonal1', 'diagonal2'
-    const [brimColor, setBrimColor] = useState('#000000');
-    const [textColor, setTextColor] = useState('#ffffff');
-
     // --- State serialization helpers ---
+
+    // Short field names for compact URL storage
+    // t: topText, b: bottomText, i: icons, m: bgMode, c: bgColor, g1: gradientColor1, g2: gradientColor2, d: gradientDir, r: brimColor, x: textColor
     const serializeState = useCallback((state) => {
-        // Remove icon IDs for compactness, will re-generate on load
-        const iconsNoId = state.icons.map(({ id, ...rest }) => rest);
-        const toSave = { ...state, icons: iconsNoId };
+        const iconsNoId = state.icons.map(icon => {
+            const iconCopy = { ...icon };
+            delete iconCopy.id;
+            return iconCopy;
+        });
+        const toSave = {
+            t: state.topText,
+            b: state.bottomText,
+            i: iconsNoId,
+            m: state.bgMode,
+            c: state.bgColor,
+            g1: state.gradientColor1,
+            g2: state.gradientColor2,
+            d: state.gradientDir,
+            r: state.brimColor,
+            x: state.textColor,
+        };
         try {
-            return btoa(encodeURIComponent(JSON.stringify(toSave)));
-        } catch (e) {
+            return btoa(JSON.stringify(toSave));
+        } catch {
             return '';
         }
     }, []);
 
+    // Support both old (long field names, URI encoded) and new (short, base64 only) formats
     const deserializeState = useCallback((str) => {
         try {
-            const obj = JSON.parse(decodeURIComponent(atob(str)));
-            // Re-add IDs to icons
-            return {
-                ...obj,
-                icons: obj.icons.map(icon => ({ ...icon, id: uuidv4() }))
-            };
-        } catch (e) {
+            let obj;
+            try {
+                // Try new format first
+                obj = JSON.parse(atob(str));
+            } catch {
+                // Fallback: old format
+                obj = JSON.parse(decodeURIComponent(atob(str)));
+            }
+            // Detect format by keys
+            if (obj.t !== undefined && obj.b !== undefined && obj.i !== undefined) {
+                // New format (short keys)
+                return {
+                    topText: obj.t || 'TOP',
+                    bottomText: obj.b || 'BOTTOM',
+                    icons: Array.isArray(obj.i) && obj.i.length ? obj.i.map(icon => ({ ...icon, id: uuidv4() })) : [
+                        { id: uuidv4(), name: 'FaStar', size: 60, x: -40, y: 0, color: '#000000', rotation: 0 },
+                        { id: uuidv4(), name: 'FaHeart', size: 60, x: 20, y: 40, color: '#000000', rotation: 0 },
+                    ],
+                    bgMode: obj.m || 'unicolor',
+                    bgColor: obj.c || '#E2001A',
+                    gradientColor1: obj.g1 || '#E2001A',
+                    gradientColor2: obj.g2 || '#ffffff',
+                    gradientDir: obj.d || 'horizontal',
+                    brimColor: obj.r || '#000000',
+                    textColor: obj.x || '#ffffff',
+                };
+            } else {
+                // Old format (long keys)
+                return {
+                    topText: obj.topText || 'TOP',
+                    bottomText: obj.bottomText || 'BOTTOM',
+                    icons: Array.isArray(obj.icons) && obj.icons.length ? obj.icons.map(icon => ({ ...icon, id: uuidv4() })) : [
+                        { id: uuidv4(), name: 'FaStar', size: 60, x: -40, y: 0, color: '#000000', rotation: 0 },
+                        { id: uuidv4(), name: 'FaHeart', size: 60, x: 20, y: 40, color: '#000000', rotation: 0 },
+                    ],
+                    bgMode: obj.bgMode || 'unicolor',
+                    bgColor: obj.bgColor || '#E2001A',
+                    gradientColor1: obj.gradientColor1 || '#E2001A',
+                    gradientColor2: obj.gradientColor2 || '#ffffff',
+                    gradientDir: obj.gradientDir || 'horizontal',
+                    brimColor: obj.brimColor || '#000000',
+                    textColor: obj.textColor || '#ffffff',
+                };
+            }
+        } catch {
             return null;
         }
     }, []);
 
+    // --- Hydrate state from hash if present ---
+    let initialState = null;
+    if (typeof window !== 'undefined' && window.location.hash.length > 1) {
+        initialState = deserializeState(window.location.hash.slice(1));
+    }
+
+    // --- State ---
+    const [topText, setTopText] = useState(initialState ? initialState.topText : 'TOP');
+    const [bottomText, setBottomText] = useState(initialState ? initialState.bottomText : 'BOTTOM');
+    const [icons, setIcons] = useState(initialState ? initialState.icons : [
+        { id: uuidv4(), name: 'FaStar', size: 60, x: -40, y: 0, color: '#000000', rotation: 0 },
+        { id: uuidv4(), name: 'FaHeart', size: 60, x: 20, y: 40, color: '#000000', rotation: 0 },
+    ]);
+    const [bgMode, setBgMode] = useState(initialState ? initialState.bgMode : 'unicolor');
+    const [bgColor, setBgColor] = useState(initialState ? initialState.bgColor : '#E2001A');
+    const [gradientColor1, setGradientColor1] = useState(initialState ? initialState.gradientColor1 : '#E2001A');
+    const [gradientColor2, setGradientColor2] = useState(initialState ? initialState.gradientColor2 : '#ffffff');
+    const [gradientDir, setGradientDir] = useState(initialState ? initialState.gradientDir : 'horizontal');
+    const [brimColor, setBrimColor] = useState(initialState ? initialState.brimColor : '#000000');
+    const [textColor, setTextColor] = useState(initialState ? initialState.textColor : '#ffffff');
+
+
+
     // --- Sync state to URL ---
+    const didMount = useRef(false);
     useEffect(() => {
+        if (!didMount.current) {
+            didMount.current = true;
+            return;
+        }
         const state = {
             topText, bottomText, icons, bgMode, bgColor, gradientColor1, gradientColor2, gradientDir, brimColor, textColor
         };
@@ -58,28 +127,7 @@ export default function BadgeEditor() {
         }
     }, [topText, bottomText, icons, bgMode, bgColor, gradientColor1, gradientColor2, gradientDir, brimColor, textColor, serializeState]);
 
-    // --- Load state from URL on mount ---
-    useEffect(() => {
-        if (window.location.hash.length > 1) {
-            const loaded = deserializeState(window.location.hash.slice(1));
-            if (loaded) {
-                setTopText(loaded.topText || '');
-                setBottomText(loaded.bottomText || '');
-                setIcons(Array.isArray(loaded.icons) && loaded.icons.length ? loaded.icons : [
-                    { id: uuidv4(), name: 'FaStar', size: 60, x: -40, y: 0, color: '#000000', rotation: 0 },
-                    { id: uuidv4(), name: 'FaHeart', size: 60, x: 20, y: 40, color: '#000000', rotation: 0 },
-                ]);
-                setBgMode(loaded.bgMode || 'unicolor');
-                setBgColor(loaded.bgColor || '#E2001A');
-                setGradientColor1(loaded.gradientColor1 || '#E2001A');
-                setGradientColor2(loaded.gradientColor2 || '#ffffff');
-                setGradientDir(loaded.gradientDir || 'horizontal');
-                setBrimColor(loaded.brimColor || '#000000');
-                setTextColor(loaded.textColor || '#ffffff');
-            }
-        }
-        // eslint-disable-next-line
-    }, []);
+
 
     // SVG gradient definition for 4-corner gradient
     // We'll use an SVG linearGradient with multiple stops to approximate a 4-corner gradient
